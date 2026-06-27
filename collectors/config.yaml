@@ -1,0 +1,15 @@
+# Butterfly Collector 配置
+# RSS 订阅列表
+feeds:
+  # - name: "example-blog"
+  #   url: "https://example.com/feed.xml"
+
+# arXiv 关注分类
+arxiv_categories:
+  - cs.AI
+  - cs.CL
+  - cs.CV
+  - cs.LG
+
+# NAS API 地址（局域网内自动发现，也可手动指定）
+nas_url: "http://nas:8899"

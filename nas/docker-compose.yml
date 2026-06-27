@@ -1,0 +1,11 @@
+services:
+  butterfly:
+    build: .
+    container_name: butterfly
+    volumes:
+      - ./data:/data
+    ports:
+      - "8899:8000"
+    environment:
+      - BUTTERFLY_DATA_DIR=/data
+    restart: always

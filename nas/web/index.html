@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🦋 Butterfly</title>
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #d2991d;
+    --red: #f85149;
+    --purple: #a371f7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); line-height:1.6; }
+  .layout { display:flex; max-width:1200px; margin:0 auto; min-height:100vh; }
+  .sidebar { width:220px; padding:24px 16px; border-right:1px solid var(--border); position:sticky; top:0; height:100vh; overflow-y:auto; }
+  .sidebar h1 { font-size:20px; margin-bottom:24px; }
+  .sidebar h1 a { color:var(--text); text-decoration:none; }
+  .sidebar nav a { display:block; padding:8px 12px; color:var(--muted); text-decoration:none; border-radius:6px; margin-bottom:4px; font-size:14px; transition:all .15s; }
+  .sidebar nav a:hover, .sidebar nav a.active { color:var(--text); background:var(--card); }
+  .sidebar .stats { margin-top:24px; font-size:12px; color:var(--muted); }
+  .main { flex:1; padding:24px 32px; }
+  .main h2 { font-size:18px; margin-bottom:16px; color:var(--text); }
+  .item { padding:16px 0; border-bottom:1px solid var(--border); display:flex; gap:12px; align-items:flex-start; }
+  .item:hover { background:var(--card); margin:0 -12px; padding-left:12px; padding-right:12px; border-radius:8px; }
+  .item-score { width:32px; height:32px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; flex-shrink:0; }
+  .score-5 { background:rgba(63,185,80,.15); color:var(--green); }
+  .score-4 { background:rgba(88,166,255,.15); color:var(--accent); }
+  .score-3 { background:rgba(210,153,29,.15); color:var(--orange); }
+  .score-2,.score-1 { background:rgba(139,148,158,.1); color:var(--muted); }
+  .item-body { flex:1; min-width:0; }
+  .item-title { font-size:15px; font-weight:600; margin-bottom:4px; }
+  .item-title a { color:var(--accent); text-decoration:none; }
+  .item-title a:hover { text-decoration:underline; }
+  .item-meta { font-size:12px; color:var(--muted); display:flex; gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+  .badge { display:inline-block; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:500; }
+  .badge-source { background:rgba(163,113,247,.15); color:var(--purple); }
+  .badge-category { background:rgba(63,185,80,.15); color:var(--green); }
+  .item-summary { font-size:13px; color:var(--muted); margin-top:4px; line-height:1.5; }
+  .item-actions { display:flex; gap:8px; flex-shrink:0; }
+  .btn { padding:4px 12px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid var(--border); background:var(--card); color:var(--text); transition:all .15s; text-decoration:none; }
+  .btn:hover { border-color:var(--accent); color:var(--accent); }
+  .btn-save { border-color:var(--green); color:var(--green); }
+  .btn-save:hover { background:rgba(63,185,80,.1); }
+  .btn-saved { border-color:var(--muted); color:var(--muted); cursor:default; }
+  .empty { text-align:center; padding:64px 0; color:var(--muted); }
+  .loading { text-align:center; padding:32px; color:var(--muted); }
+  .filter-bar { margin-bottom:16px; display:flex; gap:8px; flex-wrap:wrap; }
+  .filter-bar a { padding:4px 12px; border-radius:14px; font-size:13px; color:var(--muted); text-decoration:none; border:1px solid var(--border); transition:all .15s; }
+  .filter-bar a:hover, .filter-bar a.active { color:var(--text); border-color:var(--accent); background:rgba(88,166,255,.1); }
+  .wiki-related { margin-top:8px; font-size:12px; color:var(--purple); }
+  .wiki-related a { color:var(--purple); text-decoration:none; }
+  .wiki-related a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <h1><a href="/">🦋 Butterfly</a></h1>
+  <nav>
+    <a href="/?source=" class="active" hx-get="/ui/items?per_page=50" hx-target="#feed" hx-swap="innerHTML" hx-push-url="true">全部</a>
+    <a href="/?source=hackernews" hx-get="/ui/items?source=hackernews&per_page=50" hx-target="#feed" hx-swap="innerHTML" hx-push-url="true">Hacker News</a>
+    <a href="/?source=arxiv" hx-get="/ui/items?source=arxiv&per_page=50" hx-target="#feed" hx-swap="innerHTML" hx-push-url="true">arXiv</a>
+    <a href="/?source=github" hx-get="/ui/items?source=github&per_page=50" hx-target="#feed" hx-swap="innerHTML" hx-push-url="true">GitHub</a>
+    <a href="/?source=rss" hx-get="/ui/items?source=rss&per_page=50" hx-target="#feed" hx-swap="innerHTML" hx-push-url="true">RSS</a>
+  </nav>
+  <div class="stats" hx-get="/ui/stats" hx-trigger="load" hx-swap="innerHTML"></div>
+</aside>
+
+<!-- Main content -->
+<main class="main">
+  <div id="feed" hx-get="/ui/items?per_page=50" hx-trigger="load" hx-swap="innerHTML">
+    <div class="loading">🦋 正在加载...</div>
+  </div>
+</main>
+
+</div>
+</body>
+</html>
