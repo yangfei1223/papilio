@@ -1,11 +1,11 @@
 services:
-  butterfly:
+  papillon:
     build: .
-    container_name: butterfly
+    container_name: papillon
     volumes:
       - ./data:/data
     ports:
       - "8899:8000"
     environment:
-      - BUTTERFLY_DATA_DIR=/data
+      - PAPILLON_DATA_DIR=/data
     restart: always

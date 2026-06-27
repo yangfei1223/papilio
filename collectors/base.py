@@ -19,7 +19,7 @@ class BaseCollector(ABC):
 
     def __init__(self, nas_url: str | None = None):
         self.nas_url = nas_url or os.getenv(
-            "BUTTERFLY_NAS_URL", "http://nas:8899"
+            "PAPILLON_NAS_URL", "http://nas:8899"
         )
 
     @abstractmethod
