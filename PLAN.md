@@ -1,4 +1,4 @@
-# 🦋 Papillon — 破茧成蝶计划
+# 🦋 Papilio — 破茧成蝶计划
 
 > 个人信息聚合站，部署于 NAS，由 Hermes Agent 驱动。打破信息茧房，主动定义你看到的世界。
 
@@ -23,7 +23,7 @@
 ### 1.3 代码位置
 
 ```
-~/Code/papillon/
+~/Code/papilio/
 ```
 
 ---
@@ -67,7 +67,7 @@ Mac mini 与 NAS 之间全部通过 HTTP API 通信。Mac mini 不直接操作 N
 
 ```bash
 # NAS 上
-mkdir -p ~/docker/papillon/data ~/docker/papillon/web
+mkdir -p ~/docker/papilio/data ~/docker/papilio/web
 # 上传 docker-compose.yml + 代码，然后：
 docker compose up -d
 ```
@@ -76,7 +76,7 @@ docker compose up -d
 
 ```yaml
 services:
-  papillon:
+  papilio:
     image: python:3.12-slim
     working_dir: /app
     volumes:
@@ -163,7 +163,7 @@ CREATE INDEX idx_items_category ON items(category);
 
 ### 4.1 Collector
 
-每个源一个独立 Python 脚本，`~/Code/papillon/collectors/`：
+每个源一个独立 Python 脚本，`~/Code/papilio/collectors/`：
 
 ```
 collectors/
@@ -259,7 +259,7 @@ Web UI 上点 [→ Wiki] → 触发 POST `/api/items/:id/save` → Hermes 接收
 
 | # | 任务 | 产出 |
 |---|------|------|
-| 1.1 | 项目结构初始化 | `~/Code/papillon/` 目录树 |
+| 1.1 | 项目结构初始化 | `~/Code/papilio/` 目录树 |
 | 1.2 | NAS 端 FastAPI + SQLite | `app.py` + schema |
 | 1.3 | Docker 打包 | `docker-compose.yml` + `Dockerfile` |
 | 1.4 | 测试 NAS 端可访问 | `curl http://nas:8899/api/items` |
@@ -312,7 +312,7 @@ Web UI 上点 [→ Wiki] → 触发 POST `/api/items/:id/save` → Hermes 接收
 ## 八、文件结构
 
 ```
-~/Code/papillon/
+~/Code/papilio/
 ├── README.md
 ├── PLAN.md                     # 本文档
 │

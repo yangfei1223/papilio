@@ -2,7 +2,7 @@
 """Processor 入口 — 拉取新条目交给 Hermes AI 处理.
 
 配合 Hermes cronjob 使用:
-  cronjob(action='create', name='papillon-process',
+  cronjob(action='create', name='papilio-process',
     schedule='every 30m',
     script='scripts/process_items.py',
     prompt='...AI处理指令...',
@@ -17,7 +17,7 @@ import sys
 
 import requests
 
-NAS_URL = os.getenv("PAPILLON_NAS_URL", "http://nas:8899")
+NAS_URL = os.getenv("PAPILIO_NAS_URL", "http://nas:8899")
 
 
 def get_new_items(limit: int = 20) -> list[dict]:

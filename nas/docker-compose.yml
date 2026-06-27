@@ -1,11 +1,11 @@
 services:
-  papillon:
+  papilio:
     build: .
-    container_name: papillon
+    container_name: papilio
     volumes:
       - ./data:/data
     ports:
       - "8899:8000"
     environment:
-      - PAPILLON_DATA_DIR=/data
+      - PAPILIO_DATA_DIR=/data
     restart: always

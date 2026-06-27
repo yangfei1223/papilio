@@ -1,4 +1,4 @@
-"""Papillon — 个人信息聚合站后端.
+"""Papilio — 个人信息聚合站后端.
 
 NAS 上运行：uvicorn app:app --host 0.0.0.0 --port 8000
 """
@@ -17,7 +17,7 @@ from fastapi.staticfiles import StaticFiles
 from models import Database, Item
 from templates import feed_page, stats_widget
 
-app = FastAPI(title="Papillon", version="0.1.0")
+app = FastAPI(title="Papilio", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,8 +28,8 @@ app.add_middleware(
 
 # --------------- database ---------------
 
-DATA_DIR = Path(os.getenv("PAPILLON_DATA_DIR", "/data"))
-DB_PATH = DATA_DIR / "papillon.db"
+DATA_DIR = Path(os.getenv("PAPILIO_DATA_DIR", "/data"))
+DB_PATH = DATA_DIR / "papilio.db"
 
 db: Database | None = None
 

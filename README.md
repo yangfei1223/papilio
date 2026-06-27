@@ -1,4 +1,4 @@
-# 🦋 Papillon — 破茧成蝶
+# 🦋 Papilio — 破茧成蝶
 
 个人信息聚合站。部署于 NAS，由 Hermes Agent 驱动。打破信息茧房，主动定义你看到的世界。
 

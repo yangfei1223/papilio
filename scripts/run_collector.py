@@ -17,7 +17,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "collectors"))
 
 # NAS 地址（默认 nas.local，可通过环境变量覆盖）
-NAS_URL = os.getenv("PAPILLON_NAS_URL", "http://nas:8899")
+NAS_URL = os.getenv("PAPILIO_NAS_URL", "http://nas:8899")
 
 
 def run(name: str):

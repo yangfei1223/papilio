@@ -1,4 +1,4 @@
-"""HTML templates for Papillon Web UI.
+"""HTML templates for Papilio Web UI.
 
 纯字符串模板，不引入 Jinja2 依赖。
 """
