@@ -1,12 +1,16 @@
 """HuggingFace collector — Trending models via HF Hub API."""
 
+import os
 from datetime import datetime, timezone
 
 import requests
 
 from base import BaseCollector, content_hash
 
-HF_API = "https://huggingface.co/api"
+# HF_ENDPOINT 可覆盖 API 基址（默认官方）。区域网络屏蔽 huggingface.co 时，
+# 设 HF_ENDPOINT=https://hf-mirror.com 走镜像。仅影响 API 拉取；item.url 仍用
+# canonical huggingface.co（稳定身份 + 生产机 Mac mini 可达）。
+HF_API = os.getenv("HF_ENDPOINT", "https://huggingface.co") + "/api"
 LIMIT = 25
 
 
