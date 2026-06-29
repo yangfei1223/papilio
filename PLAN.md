@@ -212,6 +212,7 @@ PATCH /api/items/:id
 | collect-hn | 每 2 小时 | HN top 50 |
 | collect-arxiv | 每天 8:00, 20:00 | cs.AI + cs.CL |
 | collect-github | 每天 10:00 | GitHub Trending |
+| collect-huggingface | 每天 10:00 | HF trending models |
 | process-items | 每 30 分钟 | AI 处理新条目 |
 | clean-old | 每天 3:00 | 清理 90 天前未保存的低分条目 |
 
