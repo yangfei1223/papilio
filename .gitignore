@@ -24,3 +24,6 @@ Thumbs.db
 
 # Docker volumes
 nas/data/
+
+# Claude Code (personal local config)
+.claude/settings.local.json
