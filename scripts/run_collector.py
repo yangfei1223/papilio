@@ -49,8 +49,11 @@ def run(name: str):
     elif name == "github":
         from github import GitHubCollector
         GitHubCollector(NAS_URL).run()
+    elif name == "huggingface":
+        from huggingface import HuggingFaceCollector
+        HuggingFaceCollector(NAS_URL).run()
     elif name == "all":
-        for n in ["hackernews", "rss", "arxiv", "github"]:
+        for n in ["hackernews", "rss", "arxiv", "github", "huggingface"]:
             try:
                 run(n)
             except Exception as e:
