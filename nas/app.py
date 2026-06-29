@@ -6,6 +6,7 @@ NAS 上运行：uvicorn app:app --host 0.0.0.0 --port 8000
 import hashlib
 import json
 import os
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,15 +17,6 @@ from fastapi.staticfiles import StaticFiles
 
 from models import Database, Item
 from templates import feed_page, stats_widget
-
-app = FastAPI(title="Papilio", version="0.1.0")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # --------------- database ---------------
 
@@ -43,17 +35,26 @@ def get_db() -> Database:
 
 # --------------- startup / shutdown ---------------
 
-@app.on_event("startup")
-async def startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # startup
     get_db()
-
-
-@app.on_event("shutdown")
-async def shutdown():
+    yield
+    # shutdown
     global db
     if db:
         db.close()
         db = None
+
+
+app = FastAPI(title="Papilio", version="0.1.0", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # --------------- API routes ---------------
