@@ -10,6 +10,20 @@ from typing import Any
 import requests
 
 
+def _normalize_published(ts: str | None) -> str:
+    """归一化时间戳为 UTC ISO8601（+00:00 结尾）。无法解析则返回当前 UTC 时间。"""
+    if not ts:
+        return datetime.now(timezone.utc).isoformat()
+    try:
+        s = ts[:-1] + "+00:00" if ts.endswith("Z") else ts
+        dt = datetime.fromisoformat(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc).isoformat()
+    except (ValueError, TypeError):
+        return datetime.now(timezone.utc).isoformat()
+
+
 class BaseCollector(ABC):
     """所有 collector 的基类.
 
@@ -56,9 +70,7 @@ class BaseCollector(ABC):
             "title": title,
             "summary": raw.get("summary"),
             "author": raw.get("author"),
-            "published_at": raw.get(
-                "published_at", datetime.now(timezone.utc).isoformat()
-            ),
+            "published_at": _normalize_published(raw.get("published_at")),
             "content_hash": raw.get("content_hash"),
             "meta": raw.get("meta", {}),
         }

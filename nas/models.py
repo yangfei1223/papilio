@@ -7,6 +7,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+def _normalize_published(ts):
+    """归一化时间戳为 UTC ISO8601（+00:00 结尾）。"""
+    if not ts:
+        return datetime.now(timezone.utc).isoformat()
+    try:
+        s = ts[:-1] + "+00:00" if ts.endswith("Z") else ts
+        dt = datetime.fromisoformat(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc).isoformat()
+    except (ValueError, TypeError):
+        return datetime.now(timezone.utc).isoformat()
+
+
 class Item:
     """标准化条目."""
 
@@ -37,7 +51,7 @@ class Item:
             title=raw.get("title", ""),
             summary=raw.get("summary"),
             author=raw.get("author"),
-            published_at=raw.get("published_at", datetime.now(timezone.utc).isoformat()),
+            published_at=_normalize_published(raw.get("published_at")),
             content_hash=raw.get("content_hash"),
             category=raw.get("category"),
             importance=raw.get("importance"),
