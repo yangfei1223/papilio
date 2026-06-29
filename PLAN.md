@@ -213,8 +213,10 @@ PATCH /api/items/:id
 | collect-arxiv | 每天 8:00, 20:00 | cs.AI + cs.CL |
 | collect-github | 每天 10:00 | GitHub Trending |
 | collect-huggingface | 每天 10:00 | HF trending models |
-| process-items | 每 30 分钟 | AI 处理新条目 |
+| process-items | 可配（默认每 6 小时或手动） | AI 处理新条目；processor 不含调度，频率由 Hermes cronjob 定，手动触发为主 |
 | clean-old | 每天 3:00 | 清理 90 天前未保存的低分条目 |
+
+> `process-items` 默认**手动触发**（`PAPILIO_AGENT=claude PAPILIO_NAS_URL=... python3 scripts/process_items.py`）；若挂 cron，频率按 token 预算定（建议 ≥6 小时，避免 claude API 浪费）。批量大小由 `PAPILIO_PROCESS_LIMIT` 控制（默认 20）。
 
 前 4 个用 `no_agent=true` + `script=` 跑 Python 脚本。process-items 用 LLM 驱动。
 
