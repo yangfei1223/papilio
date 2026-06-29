@@ -100,8 +100,22 @@ def _clamp(v, lo: int, hi: int):
         return None
 
 
+def _strip_code_fence(text: str) -> str:
+    """若 text 被 markdown code fence 包裹（```json ... ```），去掉围栏。
+    LLM 常无视"只返回 JSON"指令仍加 fence，这里兜底。"""
+    s = text.strip()
+    if s.startswith("```"):
+        nl = s.find("\n")
+        if nl != -1:
+            s = s[nl + 1:]
+        if s.rstrip().endswith("```"):
+            s = s.rstrip()[:-3]
+    return s.strip()
+
+
 def parse_response(text: str, expected_ids: set) -> list[dict]:
     """解析 agent 返回的 JSON 数组，丢弃 id 不在 expected_ids 里的条目。"""
+    text = _strip_code_fence(text)
     data = json.loads(text)
     if not isinstance(data, list):
         raise ValueError(f"agent 返回非数组: {type(data).__name__}")
