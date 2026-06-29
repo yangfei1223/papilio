@@ -141,6 +141,17 @@ def get_clusters(limit: int = Query(20, ge=1, le=100)):
     return get_db().get_clusters(limit)
 
 
+@app.post("/api/clusters")
+def create_cluster(payload: dict):
+    """processor 检测到跨源重复时写入聚类。"""
+    cluster_hash = payload.get("cluster_hash")
+    item_ids = payload.get("item_ids", [])
+    if not cluster_hash or not item_ids:
+        raise HTTPException(400, "cluster_hash and item_ids required")
+    get_db().create_cluster(cluster_hash, item_ids)
+    return {"ok": True, "cluster_hash": cluster_hash, "count": len(item_ids)}
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok", "db": str(DB_PATH)}
