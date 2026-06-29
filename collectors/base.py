@@ -51,7 +51,7 @@ class BaseCollector(ABC):
             return None
 
         return {
-            "source": raw.get("source", self.source_name),
+            "source": raw.get("source", ""),
             "url": url,
             "title": title,
             "summary": raw.get("summary"),
@@ -62,10 +62,6 @@ class BaseCollector(ABC):
             "content_hash": raw.get("content_hash"),
             "meta": raw.get("meta", {}),
         }
-
-    @property
-    def source_name(self) -> str:
-        return self.__class__.__name__.lower().replace("collector", "")
 
     def _dedup(self, items: list[dict]) -> list[dict]:
         """当前批次内去重（按 URL）."""
