@@ -121,6 +121,11 @@ CREATE INDEX IF NOT EXISTS idx_clusters_hash ON item_clusters(cluster_hash);
 
 
 class Database:
+    ALLOWED_COLUMNS = {
+        "summary", "category", "importance", "tags",
+        "status", "wiki_slug", "wiki_saved_at", "meta",
+    }
+
     def __init__(self, db_path: Path):
         self.conn = sqlite3.connect(str(db_path), check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
@@ -167,9 +172,12 @@ class Database:
             return "created"
 
     def update_item(self, item_id: str, updates: dict):
-        updates["updated_at"] = datetime.now(timezone.utc).isoformat()
-        set_clause = ", ".join(f"{k}=?" for k in updates)
-        values = list(updates.values()) + [item_id]
+        safe = {k: v for k, v in updates.items() if k in self.ALLOWED_COLUMNS}
+        if not safe:
+            return
+        safe["updated_at"] = datetime.now(timezone.utc).isoformat()
+        set_clause = ", ".join(f"{k}=?" for k in safe)
+        values = list(safe.values()) + [item_id]
         self.conn.execute(
             f"UPDATE items SET {set_clause} WHERE id = ?",
             values,
