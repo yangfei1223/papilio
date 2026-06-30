@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Papilio</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --panel: #151922;
+      --panel-2: #1b2130;
+      --panel-3: #111722;
+      --line: #283044;
+      --line-soft: #202838;
+      --text: #e6e8ee;
+      --muted: #8b93a7;
+      --muted-2: #626b7e;
+      --accent: #8b5cf6;
+      --accent-2: #38bdf8;
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(139, 92, 246, 0.12), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(56, 189, 248, 0.08), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow: hidden;
+    }
+
+    button, input { font: inherit; }
+
+    .app {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: 72px 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(15, 17, 21, 0.84);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 340px;
+    }
+
+    .mark {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(139, 92, 246, 0.55);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(56, 189, 248, 0.07));
+      color: var(--accent-2);
+      font-size: 18px;
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-title strong {
+      letter-spacing: 0.08em;
+      font-size: 15px;
+    }
+
+    .brand-title span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .search {
+      width: min(520px, 42vw);
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(21, 25, 34, 0.9);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 13px;
+    }
+
+    .search kbd {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted-2);
+      border: 1px solid var(--line);
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: var(--panel-2);
+    }
+
+    .metrics {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: var(--mono);
+    }
+
+    .metric b { color: var(--text); font-weight: 500; }
+
+    .layout {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 260px minmax(620px, 1fr) 390px;
+    }
+
+    .sidebar, .timeline, .cognition {
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line-soft);
+      padding: 22px 16px;
+      background: rgba(17, 21, 30, 0.7);
+    }
+
+    .section-title {
+      color: var(--muted-2);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin: 20px 10px 10px;
+    }
+
+    .nav-item {
+      height: 38px;
+      border-radius: 10px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.03); color: var(--text); }
+
+    .nav-item.active {
+      color: var(--text);
+      background: rgba(139, 92, 246, 0.10);
+      border-color: rgba(139, 92, 246, 0.26);
+    }
+
+    .count {
+      font-family: var(--mono);
+      color: var(--muted-2);
+      font-size: 12px;
+    }
+
+    .source-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .source-dot.purple { background: var(--accent); }
+    .source-dot.green { background: var(--green); }
+    .source-dot.orange { background: var(--orange); }
+
+    .timeline {
+      padding: 22px 24px 80px;
+    }
+
+    .timeline-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .timeline-head h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .timeline-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .view-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pill {
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .pill.active, .pill:hover {
+      color: var(--text);
+      border-color: rgba(56, 189, 248, 0.45);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .feed { display: flex; flex-direction: column; gap: 12px; }
+
+    .card {
+      border: 1px solid var(--line-soft);
+      background: linear-gradient(180deg, rgba(27, 33, 48, 0.88), rgba(21, 25, 34, 0.92));
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: default;
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+    }
+
+    .card:hover {
+      border-color: rgba(139, 92, 246, 0.38);
+      transform: translateY(-1px);
+    }
+
+    .card.selected {
+      border-color: rgba(56, 189, 248, 0.55);
+      background: linear-gradient(180deg, rgba(31, 39, 57, 0.95), rgba(21, 25, 34, 0.96));
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+    }
+
+    .status {
+      font-family: var(--mono);
+      color: var(--accent-2);
+      font-size: 11px;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 999px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+
+    .summary {
+      margin: 10px 0 12px;
+      color: #c9ceda;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .meta-row, .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badges { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+
+    .badge {
+      font-size: 11px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-family: var(--mono);
+    }
+
+    .badge.source { color: #d5d9e3; }
+    .badge.cluster { color: var(--accent-2); border-color: rgba(56, 189, 248, 0.25); }
+
+    .importance {
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 0.15em;
+    }
+
+    .action-row { margin-top: 14px; }
+
+    .actions { display: flex; gap: 8px; }
+
+    .btn {
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .btn:hover { color: var(--text); border-color: var(--muted-2); }
+    .btn.primary {
+      color: var(--text);
+      border-color: rgba(139, 92, 246, 0.48);
+      background: rgba(139, 92, 246, 0.12);
+    }
+
+    .time {
+      color: var(--muted-2);
+      font-size: 12px;
+      font-family: var(--mono);
+    }
+
+    .cognition {
+      border-left: 1px solid var(--line-soft);
+      padding: 22px 18px 80px;
+      background: rgba(17, 21, 30, 0.62);
+    }
+
+    .panel {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: rgba(21, 25, 34, 0.78);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .panel p {
+      margin: 0;
+      color: #c5cad6;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .concepts { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .concept {
+      border: 1px solid rgba(139, 92, 246, 0.28);
+      background: rgba(139, 92, 246, 0.08);
+      color: #d8ccff;
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 12px;
+    }
+
+    .source-diff {
+      display: grid;
+      gap: 10px;
+    }
+
+    .diff-item {
+      border-left: 2px solid var(--line);
+      padding-left: 10px;
+    }
+
+    .diff-item strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .diff-item span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .cluster-map {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .mini-card b { color: var(--text); display: block; margin-bottom: 4px; }
+
+    .footer-hint {
+      position: fixed;
+      left: 282px;
+      right: 412px;
+      bottom: 0;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--muted-2);
+      font-family: var(--mono);
+      font-size: 11px;
+      background: linear-gradient(180deg, transparent, rgba(15, 17, 21, 0.92) 35%);
+      pointer-events: none;
+    }
+
+    @media (max-width: 1180px) {
+      .layout { grid-template-columns: 220px 1fr; }
+      .cognition { display: none; }
+      .footer-hint { right: 0; left: 242px; }
+    }
+  </style>
+  <!-- MVP 接入时打开即可：<script src="https://unpkg.com/htmx.org@1.9.12"></script> -->
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark">◈</div>
+        <div class="brand-title">
+          <strong>PAPILIO</strong>
+          <span>Break the cocoon. Define the world you see.</span>
+        </div>
+      </div>
+
+      <div class="search">
+        <span>Search source, concept, cluster...</span>
+        <kbd>⌘K</kbd>
+      </div>
+
+      <div class="metrics">
+        <span>NEW <b>42</b></span>
+        <span>CLUSTERS <b>9</b></span>
+        <span>SAVED <b>6</b></span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="section-title">Perspective</div>
+        <div class="nav-item active"><span>Today</span><span class="count">42</span></div>
+        <div class="nav-item"><span>Clusters</span><span class="count">9</span></div>
+        <div class="nav-item"><span>AI / Research</span><span class="count">18</span></div>
+        <div class="nav-item"><span>Engineering</span><span class="count">11</span></div>
+        <div class="nav-item"><span>Markets</span><span class="count">4</span></div>
+        <div class="nav-item"><span>Random Drift</span><span class="count">∞</span></div>
+        <div class="nav-item"><span>Saved Candidates</span><span class="count">6</span></div>
+
+        <div class="section-title">Sources</div>
+        <div class="nav-item"><span><i class="source-dot"></i>Hacker News</span><span class="count">15</span></div>
+        <div class="nav-item"><span><i class="source-dot purple"></i>arXiv</span><span class="count">8</span></div>
+        <div class="nav-item"><span><i class="source-dot green"></i>GitHub</span><span class="count">6</span></div>
+        <div class="nav-item"><span><i class="source-dot orange"></i>RSS</span><span class="count">13</span></div>
+
+        <div class="section-title">Status</div>
+        <div class="nav-item"><span>New</span><span class="count">23</span></div>
+        <div class="nav-item"><span>Processed</span><span class="count">19</span></div>
+        <div class="nav-item"><span>Saved</span><span class="count">6</span></div>
+        <div class="nav-item"><span>Archived</span><span class="count">31</span></div>
+      </aside>
+
+      <section class="timeline">
+        <div class="timeline-head">
+          <div>
+            <h1>Today’s Cognition Feed</h1>
+            <p>Hermes processed 42 items from 5 sources. 9 events contain multi-source overlap.</p>
+          </div>
+          <div class="view-tabs">
+            <button class="pill active">Signal</button>
+            <button class="pill">Time</button>
+            <button class="pill">Cluster</button>
+            <button class="pill">Random</button>
+          </div>
+        </div>
+
+        <div class="feed" id="feed">
+          <article class="card selected" data-id="item-1">
+            <div class="card-top">
+              <h2>AI agents are shifting from chat interfaces to persistent task systems</h2>
+              <span class="status">PROCESSED</span>
+            </div>
+            <p class="summary">Hermes 判断这不是单纯的产品形态变化，而是 Agent 从“对话工具”转向“长期运行的个人执行层”。关键变量是权限、记忆、调度和跨应用操作能力。</p>
+            <div class="meta-row">
+              <div class="badges">
+                <span class="badge source">HN</span>
+                <span class="badge source">RSS</span>
+                <span class="badge cluster">cluster ×3</span>
+                <span class="badge">ai</span>
+                <span class="badge">agent-os</span>
+              </div>
+              <span class="importance">●●●●○</span>
+            </div>
+            <div class="action-row">
+              <span class="time">4h ago · updated by Hermes</span>
+              <div class="actions">
+                <button class="btn">Open</button>
+                <button class="btn">Cluster</button>
+                <button class="btn primary">→ Wiki</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-id="item-2">
+            <div class="card-top">
+              <h2>New arXiv paper proposes sparse reasoning traces for long-horizon planning</h2>
+              <span class="status">NEW</span>
+            </div>
+            <p class="summary">论文可能与推理 token 预算、可解释规划和自主研究系统有关。建议与已有 concept：Reasoning、Planning、Agent Memory 建立关联。</p>
+            <div class="meta-row">
+              <div class="badges">
+                <span class="badge source">arXiv</span>
+                <span class="badge">cs.AI</span>
+                <span class="badge">reasoning</span>
+                <span class="badge">planning</span>
+              </div>
+              <span class="importance">●●●○○</span>
+            </div>
+            <div class="action-row">
+              <span class="time">7h ago · pending full processing</span>
+              <div class="actions">
+                <button class="btn">Open</button>
+                <button class="btn">Process</button>
+                <button class="btn primary">→ Wiki</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-id="item-3">
+            <div class="card-top">
+              <h2>GitHub project implements local-first knowledge graph over Markdown notes</h2>
+              <span class="status">PROCESSED</span>
+            </div>
+            <p class="summary">该项目的价值不在 UI，而在 local-first 数据模型。它可能适合作为 Papilio Wiki Bridge 的参考实现，尤其是 entity page、concept link 和 log index 的生成方式。</p>
+            <div class="meta-row">
+              <div class="badges">
+                <span class="badge source">GitHub</span>
+                <span class="badge">local-first</span>
+                <span class="badge">wiki</span>
+                <span class="badge">markdown</span>
+              </div>
+              <span class="importance">●●●●○</span>
+            </div>
+            <div class="action-row">
+              <span class="time">10h ago · 1.2k stars</span>
+              <div class="actions">
+                <button class="btn">Open</button>
+                <button class="btn">Related</button>
+                <button class="btn primary">→ Wiki</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" data-id="item-4">
+            <div class="card-top">
+              <h2>SQLite FTS5 remains sufficient for small personal archives</h2>
+              <span class="status">PROCESSED</span>
+            </div>
+            <p class="summary">对 Papilio 当前阶段，全文搜索不需要引入 Elasticsearch 或 Meilisearch。SQLite FTS5 更符合自托管、低维护、单机部署的系统原则。</p>
+            <div class="meta-row">
+              <div class="badges">
+                <span class="badge source">RSS</span>
+                <span class="badge">storage</span>
+                <span class="badge">sqlite</span>
+                <span class="badge">nas</span>
+              </div>
+              <span class="importance">●●●○○</span>
+            </div>
+            <div class="action-row">
+              <span class="time">yesterday · processed</span>
+              <div class="actions">
+                <button class="btn">Open</button>
+                <button class="btn">Archive</button>
+                <button class="btn primary">→ Wiki</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="cognition">
+        <div class="panel">
+          <h3>Why this matters</h3>
+          <p>这条信息的核心价值在于确认 Agent 产品形态正在从“单次会话”转向“持续任务系统”。这会影响个人 AI OS、权限模型、长期记忆和本地执行环境的设计。</p>
+        </div>
+
+        <div class="panel">
+          <h3>Related Concepts</h3>
+          <div class="concepts">
+            <span class="concept">Agent OS</span>
+            <span class="concept">Persistent Memory</span>
+            <span class="concept">Tool Runtime</span>
+            <span class="concept">Local-first AI</span>
+            <span class="concept">Hermes</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Source Divergence</h3>
+          <div class="source-diff">
+            <div class="diff-item"><strong>HN</strong><span>关注权限、安全、失控成本和用户是否真的需要常驻 Agent。</span></div>
+            <div class="diff-item"><strong>RSS</strong><span>强调产品趋势，把它描述为下一代工作流入口。</span></div>
+            <div class="diff-item"><strong>GitHub</strong><span>出现多个轻量实现，但多数停留在脚本编排层。</span></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Cluster Map</h3>
+          <div class="cluster-map">
+            <div class="mini-card"><b>Primary</b>Agent product shift</div>
+            <div class="mini-card"><b>Related</b>Local runtime</div>
+            <div class="mini-card"><b>Related</b>Personal memory</div>
+            <div class="mini-card"><b>Wiki</b>Agent OS</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Wiki Candidate</h3>
+          <p>建议保存为 entity：<br><strong>agent-persistent-task-system</strong><br><br>关联 concepts：Agent OS、Hermes、Local-first AI。</p>
+        </div>
+      </aside>
+    </main>
+
+    <div class="footer-hint">
+      <span>J/K navigate</span>
+      <span>O open</span>
+      <span>C cluster</span>
+      <span>W save wiki</span>
+      <span>R random drift</span>
+    </div>
+  </div>
+
+  <script>
+    const cards = Array.from(document.querySelectorAll('.card'));
+    let selectedIndex = 0;
+
+    function selectCard(index) {
+      selectedIndex = Math.max(0, Math.min(cards.length - 1, index));
+      cards.forEach((card, i) => card.classList.toggle('selected', i === selectedIndex));
+      cards[selectedIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    cards.forEach((card, index) => {
+      card.addEventListener('click', () => selectCard(index));
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'j' || e.key === 'J') selectCard(selectedIndex + 1);
+      if (e.key === 'k' || e.key === 'K') selectCard(selectedIndex - 1);
+      if (e.key === '/') {
+        e.preventDefault();
+        alert('Command palette placeholder: connect to /api/items search later.');
+      }
+      if (e.key === 'w' || e.key === 'W') alert('POST /api/items/:id/save');
+      if (e.key === 'c' || e.key === 'C') alert('GET /api/clusters');
+      if (e.key === 'r' || e.key === 'R') alert('Random Drift: fetch randomized low-priority items');
+    });
+  </script>
+</body>
+</html>

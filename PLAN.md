@@ -222,7 +222,27 @@ PATCH /api/items/:id
 
 ### 4.4 Wiki Bridge
 
-Web UI 上点 [→ Wiki] → 触发 POST `/api/items/:id/save` → Hermes 接收 → 执行：
+参考 `docs/Papilio Web UI 设计规范（V1.0）.md` §九。
+
+Web UI 上点 [→ Wiki] → **不是立即保存**，弹出 `Save to Wiki` 表单：
+
+```
+┌──────────────────────────────────┐
+│  Save to Wiki                    │
+├──────────────────────────────────┤
+│  Title:        <prefilled>       │
+│  Summary:      <prefilled>       │
+│  Entity:       <slug prefilled>  │
+│  Related Concepts: [chips]       │
+│  References:   [url list]        │
+├──────────────────────────────────┤
+│           [ Cancel ] [ Confirm ] │
+└──────────────────────────────────┘
+```
+
+字段由 processor 预填（`wiki_candidate_slug` + `concepts` + `summary` + `url`）。用户只做最后确认。
+
+确认后 `POST /api/items/:id/save` 触发 Hermes 执行：
 
 ```
 1. Agent-Reach 抓原文全文
@@ -230,10 +250,12 @@ Web UI 上点 [→ Wiki] → 触发 POST `/api/items/:id/save` → Hermes 接收
    - arXiv → MinerU 解析 PDF → raw/papers/
    - Web → raw/articles/
 3. 创建 wiki entity page（entities/{slug}.md）
-4. 关联 2+ 已有 concept 页面
+4. 关联 2+ 已有 concept 页面（用 form 提交的 Related Concepts）
 5. 更新 wiki index.md + log.md
-6. 回调 NAS API：PATCH item.wiki_status='saved'
+6. 回调 NAS API：PATCH item.status='saved' + wiki_slug + wiki_saved_at
 ```
+
+> 当前实现状态：POST `/api/items/:id/save` 已返回 `item_card` HTML 片段供 HTMX swap（卡片状态变为 `saving`）。**弹窗 UI 待 Phase 5 Wiki Bridge 实施**——当前点 [→ Wiki] 直接触发后端，不经用户确认。
 
 ---
 
